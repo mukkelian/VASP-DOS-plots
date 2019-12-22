@@ -14,6 +14,6 @@ THIRD :: Last occupied shell (e.g., s, p, d, f), kindly see the PROCAR file
 FOURTH :: Is it Spin-Orbit calc? type y for 'YES' and n for 'NO'
 
 
-Note :: Please check the ISPIN value (It doesn't matters for SO calc., any value you can put!)before executing this code!!  
+Note :: Please check the ISPIN value (It doesn't matters for SO calc., any value you can put!) before executing this code!!  
 Feel free to contact me for any queries and improving this code. 
 Mukesh Kumar Sharma email ID :: msharma1@ph.iitr.ac.in, ms19@iitbbs.ac.in  Thanking you!!
