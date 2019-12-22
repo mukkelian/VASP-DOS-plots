@@ -6,8 +6,11 @@ This code is to plot the projected density of states from the VASP output file. 
 
 
 FIRST :: Number of species used in your POSCAR file 
+
 SECOND :: ISPIN value used in INCAR file
+
 THIRD :: Last occupied shell (e.g., s, p, d, f), kindly see the PROCAR file 
+
 FOURTH :: Is it Spin-Orbit calc? type y for 'YES' and n for 'NO'
 
 
