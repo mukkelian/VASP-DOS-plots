@@ -1,4 +1,4 @@
-# vaspDOSplots_SpinPol_SO
+# VASP-DOS-plots-SpinPol-SO
 This code is to plot the projected density of states from the VASP output file. It requires only POSCAR, DOSCAR files. Just edit the input file according to your system to obtain the output files in the seprate directory 'plot_files'.  please keep all the files in the same directory (POSCAR, DOSCAR, input, reduce.sh, vasp_plots.f90) 
 
 
