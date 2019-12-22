@@ -1,0 +1,4 @@
+3	#no. of species
+2	# ISPIN
+d       # last occupied shell (e.g., s, p, d, f), kindly see the PROCAR file
+y	# for Spin-Orbit (SO) 'y' otherwise 'n'
