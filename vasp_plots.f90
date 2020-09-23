@@ -11,10 +11,10 @@
 	character orb, so
 	integer orb_l, ol, jj
         integer num,line,line1,i,j,n_atoms, n_species, ispin, k
-        integer num1, at1, at2
+        integer at1, at2
         real a1,b1,c1,d1,a2,b2,c2,d2,e2,a3, abc(3,3)
         real  emax, emin, eferm, wt
-        num=0; num1=0
+        num = 0
 	!_______________ INPUT FILE __________________!
         open(unit=0,file='input',status='old',action='read')
 	read(0,*) n_species ! no. of species
@@ -98,7 +98,7 @@
 	str1(1) ='21 TOTAL'
 
 
-	spin_calc: if(ispin .eq.2) then
+	spin_calc: if(ispin.eq.2) then
 
 	if (orb.eq.'s')then
 	ol = 3
@@ -118,8 +118,6 @@
 	stop
 	end if
 	
-
-
 	!_____________ READING DOSCAR FILE __________!
         open(unit=10002,file='DOSCAR',status='unknown')
         read(10002,*) a1,b1,c1,d1
@@ -178,21 +176,19 @@
 
         main1 : do j =1, n_atoms
 	
-	num=num+1
+	num = num + 1
 
         write(filename,1) num
 
 1       format('atom_',i3.3,'.dat')
 
-        open(file=filename,unit=j)
+        open(file= filename,unit = num)
     
-        write(j,*)'# emax =',hdr(j,1),'emin =',hdr(j,2), &
+        write(num,*)'# emax =',hdr(j,1),'emin =',hdr(j,2), &
        'no. of lines =',hdr(j,3),&
         '# fermi =',hdr(j,4)!...A
 
-	write(j,21) (str(jj),jj = 1, orb_l)
-
-
+	write(num,21) (str(jj),jj = 1, 41)
 
         do i = 1,line !do i = 2,line; if u don't want to write first line (A)
 
@@ -213,8 +209,8 @@
 	b(j,i,39) = b(j,i,32) + b(j,i,33) + b(j,i,34) +&		!fdn 
 	b(j,i,35) + b(j,i,36) + b(j,i,37) + b(j,i,38)
 
+	write(num,20) b(j,i,1) - hdr(j,4), (b(j,i,jj), jj = 2, 39),tot(2,i),tot(3,i)
 
-	write(j,20) b(j,i,1) - hdr(j,4), (b(j,i,jj), jj = 2, orb_l)
         end do
 
 	close(num)
@@ -339,7 +335,7 @@
 
 
         main2 : do j =1, n_atoms
-               num=num+1
+               num = num + 1
 
 
         write(filename,3) num
@@ -348,13 +344,13 @@
 !1       format('atom_',i3.3)
 
 
-        open(file=filename,unit=j)
+        open(file=filename,unit = num)
     
-        write(j,*)'# emax =',hdr(j,1),'emin =',hdr(j,2), &
+        write(num,*)'# emax =',hdr(j,1),'emin =',hdr(j,2), &
        'no. of lines =',hdr(j,3),&
         '# fermi =',hdr(j,4)!...A
 
-	write(j,21) (str(jj),jj = 1, orb_l)
+	write(num,21) (str(jj),jj = 1, 20), str1(1)
 
         do i = 1,line !do i = 2,line; if u don't want to write first line (A)
 
@@ -367,7 +363,7 @@
 	b(j,i,16) + b(j,i,17) + b(j,i,18) + b(j,i,19) 
 
 
-	write(j,20) b(j,i,1) - hdr(j,4), (b(j,i,jj), jj = 2, orb_l)
+	write(num,20) b(j,i,1) - hdr(j,4), (b(j,i,jj), jj = 2, orb_l),tot(2,i)
         end do
 
 	close(num)
@@ -542,19 +538,19 @@
 
         main_so : do j =1, n_atoms
 	
-	num=num+1
+	num = num+1
 
         write(filename,111) num
 
 111     format('atom_so',i3.3,'.dat')
 
-        open(file=filename,unit=j)
+        open(file=filename,unit = num)
     
-        write(j,*)'# emax =',hdr(j,1),'emin =',hdr(j,2), &
+        write(num,*)'# emax =',hdr(j,1),'emin =',hdr(j,2), &
        'no. of lines =',hdr(j,3),&
         '# fermi =',hdr(j,4)!...A
 
-	write(j,21) (str(jj),jj = 1, orb_l)
+	write(num,21) (str(jj),jj = 1, orb_l)
 
 
 
@@ -569,7 +565,7 @@
 	b(j,i,68) =  b(j,i,40) + b(j,i,44) + b(j,i,48) +&		!f_tot
 	b(j,i,52) + b(j,i,56) + b(j,i,60) + b(j,i,64)
 
-	write(j,20) b(j,i,1) - hdr(j,4), (b(j,i,jj), jj = 2, orb_l)
+	write(num,20) b(j,i,1) - hdr(j,4), (b(j,i,jj), jj = 2, orb_l)
         end do
 
 	close(num)
