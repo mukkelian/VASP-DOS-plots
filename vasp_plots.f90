@@ -1,3 +1,22 @@
+! Projected/Total Density of State (PDOS/TDOS) plotting tool. 
+! Copyright (C) 2021  Mukesh Kumar Sharma, Department of Physics,
+! Indian Institute of Technology Roorkee, Uttrakhand, India, PIN code 247667
+
+! This program is free software; you can redistribute it and/or
+! modify it under the terms of the GNU General Public License
+! as published by the Free Software Foundation; either version 2
+! of the License, or (at your option) any later version.
+
+! This program is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+
+! You should have received a copy of the GNU General Public License
+! along with this program; if not, write to the Free Software
+! Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+!	UPDATE Jul 8 20201 @ 10:37 PM
 	implicit none
         real, allocatable :: x(:), y(:), z(:) !x,y,z-co-ordinates of ions
         integer, allocatable :: ion(:)
@@ -14,7 +33,7 @@
         integer at1, at2
         real a1,b1,c1,d1,a2,b2,c2,d2,e2,a3, abc(3,3)
         real  emax, emin, eferm, wt
-        num = 0
+        num = 500
 	!_______________ INPUT FILE __________________!
         open(unit=0,file='input',status='old',action='read')
 	read(0,*) n_species ! no. of species
@@ -22,16 +41,6 @@
 	read(0,*) orb	! last family of orbitals in PROCAR, i.e., s,p,d or f
 	read(0,*) so	! Spin-Orbit coupling
 	close (0)
-
-	print*,'!'
-	print*,'!'
-	print*, '~ Mukesh Kumar Sharma'
-	print*, 'contact:: msharma1@ph.iitr.ac.in'
-	print*,'!'
-	print*,'!#########################!'
-	print*, '!May the Force be with you!'
-	print*,'!#########################!'
-	print*,'.'
 
 	open(10001,file='POSCAR',status='unknown')
 
@@ -49,18 +58,6 @@
 	read(10001,*)(ion(i), i =1 ,n_species)
 	n_atoms = sum(ion)
 	
-!	allocate(x(n_atoms),y(n_atoms),z(n_atoms))
-
-!	x = 0; y = 0; z = 0
-!	read(10001,*)coordinate
-!	if(coordinate.ne.'Direct')then
-!	print*, 'Choose POSCAR in fraction co-ordinate only'
-!	stop
-!	endif
-	
-!	do i = 1,n_atoms
-!	read(10001,*)x(i),y(i),z(i) !fraction co-ordinates
-!	end do
 	close(10001)
 
 	spin_orbit : if(so.eq.'n')then
@@ -102,29 +99,29 @@
 
 	if (orb.eq.'s')then
 	ol = 3
-	orb_l = ol
+	!orb_l = ol
 	elseif(orb.eq.'p')then
 	ol = 9
-	orb_l = ol + 2
+	!orb_l = ol + 2
 	elseif(orb.eq.'d')then
 	ol = 19
-	orb_l = ol + 4
+	!orb_l = ol + 4
 	elseif(orb.eq.'f')then
 	ol = 33
-	orb_l = ol + 6
+	!orb_l = ol + 6
 	else
 	print*, 'inputs are not appropriate, please &
 	chk the input file'
 	stop
 	end if
-	
+
 	!_____________ READING DOSCAR FILE __________!
         open(unit=10002,file='DOSCAR',status='unknown')
         read(10002,*) a1,b1,c1,d1
         read(10002,*) a2,b2,c2,d2,e2
-        read(10002,*)a3
-        read(10002,*)car
-        read(10002,*)ttl
+        read(10002,*) a3
+        read(10002,*) car
+        read(10002,*) ttl
         read(10002,*)emax, emin, line, eferm, wt
 
 	allocate (a(n_atoms, line, 39),b(n_atoms, line, 39),&
@@ -178,7 +175,7 @@
 	
 	num = num + 1
 
-        write(filename,1) num
+        write(filename,1) num-500
 
 1       format('atom_',i3.3,'.dat')
 
@@ -206,11 +203,12 @@
 	b(j,i,20) = b(j,i,13) + b(j,i,14) + b(j,i,15) +&		!f_up 
 	b(j,i,16) + b(j,i,17) + b(j,i,18) + b(j,i,19) 
 
-	b(j,i,39) = b(j,i,32) + b(j,i,33) + b(j,i,34) +&		!fdn 
+	b(j,i,39) = b(j,i,32) + b(j,i,33) + b(j,i,34) +&		!f_dn 
 	b(j,i,35) + b(j,i,36) + b(j,i,37) + b(j,i,38)
 
-	write(num,20) b(j,i,1) - hdr(j,4), (b(j,i,jj), jj = 2, 39),tot(2,i),tot(3,i)
-
+	write(num,20) b(j,i,1) - hdr(j,4), (b(j,i,jj), jj = 2, 39), &
+	b(j,i,2) + b(j,i,6) + b(j,i,12) + b(j,i,20), &
+	b(j,i,21) + b(j,i,25) + b(j,i,31) + b(j,i,39)
         end do
 
 	close(num)
@@ -227,7 +225,6 @@
 
 	write(n_atoms+k,21) (str(jj),jj = 1, 41)
 
-!	do i = int(sum(ion(0:k-1)))+1, int(sum(ion(0:k)))
 	do i = 1, line
 	at1 = int(sum(ion(0:k-1)))+1; at2 = int(sum(ion(0:k)))
 
@@ -271,21 +268,20 @@
 	close(n_atoms+k)
 	end do atomic_tot_dos
 
-
 	elseif(ispin.eq.1)then
 
 	if (orb.eq.'s')then
 	ol = 2
-	orb_l = ol
+	!orb_l = ol
 	elseif(orb.eq.'p')then
 	ol = 5
-	orb_l = ol + 1
+	!orb_l = ol + 1
 	elseif(orb.eq.'d')then
 	ol = 10
-	orb_l = ol + 2
+	!orb_l = ol + 2
 	elseif(orb.eq.'f')then
 	ol = 17
-	orb_l = ol + 3
+	!orb_l = ol + 3
 	else
 	print*, 'inputs are not appropriate, please &
 	chk the input file'
@@ -296,10 +292,10 @@
         open(unit=10002,file='DOSCAR',status='unknown')
         read(10002,*) a1,b1,c1,d1
         read(10002,*) a2,b2,c2,d2,e2
-        read(10002,*)a3
-        read(10002,*)car
-        read(10002,*)ttl
-        read(10002,*)emax, emin, line, eferm, wt
+        read(10002,*) a3
+        read(10002,*) car
+        read(10002,*) ttl
+        read(10002,*) emax, emin, line, eferm, wt
 
 	allocate (a(n_atoms, line, 20),b(n_atoms, line, 20),&
 	 hdr(n_atoms,5), tot(3,line))
@@ -362,8 +358,8 @@
 	b(j,i,20) = b(j,i,13) + b(j,i,14) + b(j,i,15) +&		!f_up 
 	b(j,i,16) + b(j,i,17) + b(j,i,18) + b(j,i,19) 
 
-
-	write(num,20) b(j,i,1) - hdr(j,4), (b(j,i,jj), jj = 2, orb_l),tot(2,i)
+	write(num,20) b(j,i,1) - hdr(j,4), (b(j,i,jj), jj = 2, 20), &
+	b(j,i,2) + b(j,i,6) + b(j,i,12) + b(j,i,20)
         end do
 
 	close(num)
@@ -379,7 +375,6 @@
         open(file=filename,unit=n_atoms+k)
 
 	write(n_atoms+k,21) (str(jj),jj = 1, 20), str1(1)
-
 
 	do i = 1, line
 	at1 = int(sum(ion(0:k-1)))+1; at2 = int(sum(ion(0:k)))
@@ -402,11 +397,8 @@
 
 
 	sum(b(at1:at2,i,2))+ & !s
-
 	sum(b(at1:at2,i,6))+& !p_t
-
 	sum(b(at1:at2,i,12))+& ! d_t
-
 	sum(b(at1:at2,i,20)) ! f_t
 
 	end do
@@ -418,7 +410,7 @@
 	else
 	print*,'ERROR: Select the correct ISPIN value'
 	end if spin_calc
-	
+
 	elseif(so.eq.'y')then
 
         str(1) = '# 1E-Ef'
@@ -450,16 +442,16 @@
 
 	if (orb.eq.'s')then
 	ol = 5
-	orb_l = ol
+	!orb_l = ol
 	elseif(orb.eq.'p')then
 	ol = 17
-	orb_l = ol + 1
+	!orb_l = ol + 1
 	elseif(orb.eq.'d')then
 	ol = 37
-	orb_l = ol + 2
+	!orb_l = ol + 2
 	elseif(orb.eq.'f')then
 	ol = 65
-	orb_l = ol + 3
+	!orb_l = ol + 3
 	else
 	print*, 'inputs are not appropriate, please &
 	chk the input file'
@@ -471,10 +463,10 @@
         open(unit=10002,file='DOSCAR',status='unknown')
         read(10002,*) a1,b1,c1,d1
         read(10002,*) a2,b2,c2,d2,e2
-        read(10002,*)a3
-        read(10002,*)car
-        read(10002,*)ttl
-        read(10002,*)emax, emin, line, eferm, wt
+        read(10002,*) a3
+        read(10002,*) car
+        read(10002,*) ttl
+        read(10002,*) emax, emin, line, eferm, wt
 
 	allocate (a(n_atoms, line, 70),b(n_atoms, line, 70),&
 	 hdr(n_atoms,5), tot(5,line))
@@ -550,9 +542,7 @@
        'no. of lines =',hdr(j,3),&
         '# fermi =',hdr(j,4)!...A
 
-	write(num,21) (str(jj),jj = 1, orb_l)
-
-
+	write(num,21) (str(jj),jj = 1, 68), str1(1)
 
         do i = 1,line !do i = 2,line; if u don't want to write first line (A)
 
@@ -565,7 +555,8 @@
 	b(j,i,68) =  b(j,i,40) + b(j,i,44) + b(j,i,48) +&		!f_tot
 	b(j,i,52) + b(j,i,56) + b(j,i,60) + b(j,i,64)
 
-	write(num,20) b(j,i,1) - hdr(j,4), (b(j,i,jj), jj = 2, orb_l)
+	write(num,20) b(j,i,1) - hdr(j,4), (b(j,i,jj), jj = 2, 68), &
+	b(j,i,5) + b(j,i,18) + b(j,i,39) + b(j,i,68)
         end do
 
 	close(num)
@@ -647,12 +638,21 @@
 	stop
 
 	end if spin_orbit
-
+	print*,''
+	print*,'DONE!'
+	print*,''
 	call system('mkdir plot_files')
 	call system ('bash reduce.sh')
         call system('mv atom* plot_files')
 20	format(70f12.7)
 21      format(70A12)
+
+	print*,''
+	print*, '~ Mukesh Kumar Sharma'
+	print*, 'contact:: msharma1@ph.iitr.ac.in'
+	print*,''
+	print*, 'May the Force be with you!'
+	print*,''
 
         stop
         end
