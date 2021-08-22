@@ -16,7 +16,7 @@
 ! along with this program; if not, write to the Free Software
 ! Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-!	UPDATE Jul 8 20201 @ 10:37 PM
+!	UPDATE Aug 22 2021 @ 11:38 AM
 	implicit none
         real, allocatable :: x(:), y(:), z(:) !x,y,z-co-ordinates of ions
         integer, allocatable :: ion(:)
@@ -41,7 +41,12 @@
 	read(0,*) orb	! last family of orbitals in PROCAR, i.e., s,p,d or f
 	read(0,*) so	! Spin-Orbit coupling
 	close (0)
-
+	print*,''
+	print"(' No. of species is ',i1)", n_species ! no. of species
+	print"(' calculating DOS, upto orbital-', a)", orb	! last family of orbitals in PROCAR, i.e., s,p,d or f
+	print"(' at ISPIN value', i2)",ispin ! type of spin calc
+	print*,'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+	print*,''
 	open(10001,file='POSCAR',status='unknown')
 
 	!____________ READING STRUCTURE FILE _________!
@@ -61,7 +66,9 @@
 	close(10001)
 
 	spin_orbit : if(so.eq.'n')then
-
+	print*, ''
+	print*, "Spin-Orbit(SO) is not selected!"
+	print*, "running for normal collinear calculation"
         str(1) = '# 1E-Ef'
 
 	str(2) ='2 s_up'
@@ -269,7 +276,8 @@
 	end do atomic_tot_dos
 
 	elseif(ispin.eq.1)then
-
+	print*, ''
+	print*, 'Non-magnetic calculation is runnig'
 	if (orb.eq.'s')then
 	ol = 2
 	!orb_l = ol
@@ -334,7 +342,7 @@
                num = num + 1
 
 
-        write(filename,3) num
+        write(filename,3) num-500
 
 3       format('atom_',i3.3,'.dat')
 !1       format('atom_',i3.3)
@@ -412,7 +420,8 @@
 	end if spin_calc
 
 	elseif(so.eq.'y')then
-
+	print*, ''
+	print*, 'Spin-Orbit(SO) is selected'
         str(1) = '# 1E-Ef'
 
 	str(2) ='2 s'; str(3) ='3 s_mx'; str(4) ='4 s_my'; str(5) ='5 s_mz'
@@ -471,7 +480,7 @@
 	allocate (a(n_atoms, line, 70),b(n_atoms, line, 70),&
 	 hdr(n_atoms,5), tot(5,line))
 
-	a= 0.0; b = 0.0; hdr = 0.0
+	a = 0.0; b = 0.0; hdr = 0.0
 
         do i= 1,line
         read(10002,*)(tot(j,line), j=1, 3)
@@ -528,11 +537,11 @@
         end do
         end do
 
-        main_so : do j =1, n_atoms
+        main_so : do j = 1, n_atoms
 	
-	num = num+1
+	num = num + 1
 
-        write(filename,111) num
+        write(filename,111) num-500
 
 111     format('atom_so',i3.3,'.dat')
 
@@ -556,7 +565,7 @@
 	b(j,i,52) + b(j,i,56) + b(j,i,60) + b(j,i,64)
 
 	write(num,20) b(j,i,1) - hdr(j,4), (b(j,i,jj), jj = 2, 68), &
-	b(j,i,5) + b(j,i,18) + b(j,i,39) + b(j,i,68)
+	b(j,i,2) + b(j,i,18) + b(j,i,39) + b(j,i,68)
         end do
 
 	close(num)
@@ -619,10 +628,10 @@
 	sum(b(at1:at2,i,66)),sum(b(at1:at2,i,67)),&
 	sum(b(at1:at2,i,68)),&
 
-	sum(b(at1:at2,i,2))+ & !s_tot
-	sum(b(at1:at2,i,18))+& !p_tot
-	sum(b(at1:at2,i,39))+& ! d_tot
-	sum(b(at1:at2,i,68)) ! f_tot
+	sum(b(at1:at2,i,2))  +& !s_tot
+	sum(b(at1:at2,i,18)) +& !p_tot
+	sum(b(at1:at2,i,39)) +& ! d_tot
+	sum(b(at1:at2,i,68)) 	! f_tot
 
 
 	end do
@@ -644,7 +653,7 @@
 	call system('mkdir plot_files')
 	call system ('bash reduce.sh')
         call system('mv atom* plot_files')
-20	format(70f12.7)
+20	format(70f15.7)
 21      format(70A12)
 
 	print*,''
