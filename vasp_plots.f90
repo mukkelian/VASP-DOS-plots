@@ -16,7 +16,7 @@
 ! along with this program; if not, write to the Free Software
 ! Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-!	UPDATE Aug 22 2021 @ 11:38 AM
+!	UPDATE Apr 20 2022 @ 7:50 PM
 	implicit none
         real, allocatable :: x(:), y(:), z(:) !x,y,z-co-ordinates of ions
         integer, allocatable :: ion(:)
@@ -137,7 +137,7 @@
 	a= 0.0; b = 0.0; hdr = 0.0
 
         do i= 1,line
-        read(10002,*)(tot(j,line), j=1, 5)
+        read(10002,*)(tot(j, i), j=1, 5)
         end do
 
         
@@ -311,7 +311,7 @@
 	a= 0.0; b = 0.0; hdr = 0.0
 
         do i= 1,line
-        read(10002,*)(tot(j,line), j=1, 3)
+        read(10002,*)(tot(j, i), j=1, 3)
         end do
 
 	do j=1,n_atoms
@@ -483,7 +483,7 @@
 	a = 0.0; b = 0.0; hdr = 0.0
 
         do i= 1,line
-        read(10002,*)(tot(j,line), j=1, 3)
+        read(10002,*)(tot(j, i), j=1, 3)
         end do
 
 	do j=1,n_atoms
@@ -647,12 +647,20 @@
 	stop
 
 	end if spin_orbit
+	
+	open (10003, file = 'tdos.dat', status = 'unknown')
+	write(10003, *) '# E-Efermi, Up, Dn, ....'
+	do i= 1,line
+        	write(10003, 20) tot(1, i)- eferm, tot(2, i), -1*tot(3, i)
+        end do
+        close (10003)
+        
 	print*,''
 	print*,'DONE!'
 	print*,''
 	call system('mkdir plot_files')
 	call system ('bash reduce.sh')
-        call system('mv atom* plot_files')
+        call system('mv *.dat plot_files')
 20	format(70f15.7)
 21      format(70A12)
 
