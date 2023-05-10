@@ -1,4 +1,3 @@
-![GitHub all releases](https://img.shields.io/github/downloads/mukkelian/vasp-dos-plots/total?logo=github)
 # VASP-DOS-plots
 This code can be used to plot the projected density of states from the VASP output file. It requires only POSCAR, DOSCAR files. Just edit the input file according to your system to obtain the output files in the seprate directory 'plot_files'.  please keep all the files in the same directory (POSCAR, DOSCAR, input, reduce.sh, vasp_plots.f90)
 
